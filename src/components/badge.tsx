@@ -24,6 +24,7 @@ export default function BadgeSelected({
       <p>{label}</p>
       <div className="flex items-center gap-1">
         <Button
+          type="button"
           variant="ghost"
           className="hover:bg-transparent"
           size="sm"
@@ -33,6 +34,7 @@ export default function BadgeSelected({
         </Button>
         {amount}
         <Button
+          type="button"
           variant="ghost"
           className="hover:bg-transparent"
           size="sm"

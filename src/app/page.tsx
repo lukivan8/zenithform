@@ -13,15 +13,8 @@ import {
 import { Input } from "@/shad/ui/input";
 
 const foodSelect: ListElem[] = [
-  { value: "carbonara", label: "Пицца Карбонара" },
-  { value: "carbonara1", label: "Пицца Карбонара" },
-  { value: "carbonara2", label: "Пицца Карбонара" },
-  { value: "carbonara3", label: "Пицца Карбонара" },
-  { value: "carbonara4", label: "Пицца Карбонара" },
-  { value: "carbonara5", label: "Пицца Карбонара" },
-  { value: "carbonara6", label: "Пицца Карбонара" },
-  { value: "carbonara7", label: "Пицца Карбонара" },
-  { value: "carbonara8", label: "Пицца Карбонара" },
+  { value: "sausages", label: "Пицца с колбасками" },
+  { value: "california+ugor", label: "Калифорния с угрем" },
 ];
 
 export default function Home() {
@@ -67,7 +60,7 @@ export default function Home() {
             <Input type="tel" placeholder="8(777)555-66-44" />
           </CardContent>
         </Card>
-        <Button>Подтвердить</Button>
+        <Button type="submit">Подтвердить</Button>
       </form>
     </main>
   );
