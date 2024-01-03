@@ -16,12 +16,14 @@ import { Drawer, DrawerContent, DrawerTrigger } from "@/shad/ui/drawer";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shad/ui/popover";
 import ChevronDown from "./+icons/chevron-down";
 import { Card, CardContent } from "@/shad/ui/card";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import XCircle from "./+icons/x-circle";
+import BadgeSelected from "./badge";
 
-type ListElem = {
+export type ListElem = {
   value: string;
   label: string;
+  amount?: number;
 };
 
 type Props = {
@@ -32,38 +34,53 @@ type Props = {
 export function MultipleCombobox({ list, placeholder }: Props) {
   const [open, setOpen] = React.useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
-  const [statusList, setStatusList] = useState<string[]>([]);
+  const [statusList, setStatusList] = useState<ListElem[]>([]);
+
+  useEffect(() => {
+    list.map((elem) => {
+      elem.amount ?? (elem.amount = 1);
+      return elem;
+    });
+  }, []);
+
+  useEffect(() => {
+    statusList.forEach((status, i) =>
+      console.log(`${status.value}+${i.toString()}`)
+    );
+  }, [statusList]);
 
   return (
     <div>
       <div className="flex flex-wrap pb-2 gap-2">
         {statusList.map((status, i) => (
-          <div
-            className="border rounded-full p-2 px-3 text-xs flex gap-2 items-center"
-            key={i}
-          >
-            <p>{status}</p>
-            <XCircle
-              className="cursor-pointer"
-              onClick={() =>
-                setStatusList((curr) => {
-                  const newList = [...curr];
-                  newList.splice(i, 1);
-                  return newList;
-                })
+          <BadgeSelected
+            key={`${status}+${i}`}
+            value={status.value}
+            label={status.label}
+            increment={() => {
+              const newList = [...statusList];
+              newList[i].amount = newList[i].amount! + 1;
+
+              setStatusList(newList);
+            }}
+            decrement={() => {
+              const newList = [...statusList];
+              newList[i].amount = newList[i].amount! - 1;
+              if (newList[i].amount! <= 0) {
+                newList.splice(i, 1);
+                setStatusList(newList);
+              } else {
+                setStatusList(newList);
               }
-            ></XCircle>
-          </div>
+            }}
+          />
         ))}
       </div>
 
       {isDesktop ? (
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className="min-w-[150px] gap-2 justify-between"
-            >
+            <Button className="min-w-[150px] gap-2 justify-between bg-black">
               {placeholder ? (
                 <>
                   {placeholder} <ChevronDown />
@@ -79,10 +96,10 @@ export function MultipleCombobox({ list, placeholder }: Props) {
             <StatusList
               list={list}
               setOpen={setOpen}
-              setSelectedStatus={(str: string | null) =>
+              setSelectedStatus={(elem: ListElem | null) =>
                 setStatusList((curr) => {
                   const newList = [...curr];
-                  str && newList.push(str);
+                  elem && newList.push(elem);
                   return newList;
                 })
               }
@@ -92,10 +109,7 @@ export function MultipleCombobox({ list, placeholder }: Props) {
       ) : (
         <Drawer open={open} onOpenChange={setOpen}>
           <DrawerTrigger asChild>
-            <Button
-              variant="outline"
-              className="min-w-[150px] gap-2 justify-between"
-            >
+            <Button className="min-w-[150px] gap-2 justify-between bg-black">
               {placeholder ? (
                 <>
                   {placeholder} <ChevronDown />
@@ -112,10 +126,10 @@ export function MultipleCombobox({ list, placeholder }: Props) {
               <StatusList
                 list={list}
                 setOpen={setOpen}
-                setSelectedStatus={(str: string | null) =>
+                setSelectedStatus={(elem: ListElem | null) =>
                   setStatusList((curr) => {
                     const newList = [...curr];
-                    str && newList.push(str);
+                    elem && newList.push(elem);
                     return newList;
                   })
                 }
@@ -134,7 +148,7 @@ function StatusList({
   list,
 }: {
   setOpen: (open: boolean) => void;
-  setSelectedStatus: (status: string | null) => void;
+  setSelectedStatus: (status: ListElem | null) => void;
   list: ListElem[];
 }) {
   return (
@@ -149,8 +163,7 @@ function StatusList({
               value={status.value}
               onSelect={(value: string) => {
                 setSelectedStatus(
-                  list.find((priority) => priority.value === value)?.label ||
-                    null
+                  list.find((priority) => priority.value === value) || null
                 );
                 setOpen(false);
               }}
